@@ -120,7 +120,6 @@ try {
       setIsOcrLoading(false);
     }
   }; // Dấu này đóng hàm handleOcrExtract. Hãy xóa các dấu } thừa bên dưới nó nếu có.
-
   // Main Infographic & Package Generation
   const handleGenerateInfographic = async () => {
     if (!metadata.title.trim()) {
