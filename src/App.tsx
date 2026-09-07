@@ -99,26 +99,29 @@ try {
   
   const prompt = `Phân tích hình ảnh bìa sách và trích xuất các thông tin chi tiết (tên sách, tác giả, nhà xuất bản...). Kết hợp với dữ liệu sau nếu có: ${summaryText || ''}`;
   
-  const imageParts = base64Data ? [{
-    inlineData: {
-      data: base64Data,
-      mimeType
-    }
-  }] : [];
+const imageParts = base64Data ? [{
+      inlineData: {
+        data: base64Data,
+        mimeType
+      }
+    }] : [];
+    // BẮT ĐẦU TỪ ĐÂY: Thêm đoạn code xử lý kết quả
+    const result = await model.generateContent([prompt, ...imageParts]);
+    const response = await result.response;
+    const text = response.text();
 
-  const result = await model.generateContent([prompt, ...imageParts]);
-  const response = await result.response;
-  const text = response.text();
+    const extractedText = text || "Không tìm thấy thông tin hợp lệ.";
+    
+    // Cập nhật text vào metadata của bạn (điều chỉnh tên hàm setMetadata cho khớp với code của bạn)
+    setMetadata(prev => ({ ...prev, description: extractedText })); 
+    // KẾT THÚC ĐOẠN THÊM MỚI
 
-  // Cập nhật dữ liệu vào state của bạn (tương tự JSON trả về lúc trước)
-  const extractedText = text || "Không tìm thấy thông tin hợp lệ.";
-  // ... đoạn code cập nhật UI của bạn
-} catch (error) {
-      console.error("Lỗi Google AI:", error);
-      setErrorMsg(`Lỗi xử lý AI: ${error.message}`);
-    } finally {
-      setIsOcrLoading(false);
-    }
+  } catch (error) {
+    console.error("Lỗi Google AI:", error);
+    setErrorMsg(`Lỗi xử lý AI: ${error.message}`);
+  } finally {
+    setIsOcrLoading(false);
+  }
   }; // Dấu này đóng hàm handleOcrExtract. Hãy xóa các dấu } thừa bên dưới nó nếu có.
   // Main Infographic & Package Generation
   const handleGenerateInfographic = async () => {
