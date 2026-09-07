@@ -91,7 +91,11 @@ export default function App() {
         }),
       });
 
-      const json = await res.json();
+      if (!res.ok) {
+  const errorText = await res.text();
+  throw new Error(`Đường dẫn API chưa tồn tại hoặc bị lỗi (Mã lỗi: ${res.status}).`);
+}
+const json = await res.json();
       if (!res.ok || !json.success) {
         throw new Error(json.error || 'Trích xuất thất bại.');
       }
