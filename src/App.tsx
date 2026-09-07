@@ -114,13 +114,12 @@ try {
   const extractedText = text || "Không tìm thấy thông tin hợp lệ.";
   // ... đoạn code cập nhật UI của bạn
 } catch (error) {
-  console.error("Lỗi Google AI:", error);
-  setErrorMsg(`Lỗi xử lý AI: ${error.message}`);
-} finally {
-  setIsOcrLoading(false);
-}
+      console.error("Lỗi Google AI:", error);
+      setErrorMsg(`Lỗi xử lý AI: ${error.message}`);
+    } finally {
+      setIsOcrLoading(false);
     }
-  };
+  }; // Dấu này đóng hàm handleOcrExtract. Hãy xóa các dấu } thừa bên dưới nó nếu có.
 
   // Main Infographic & Package Generation
   const handleGenerateInfographic = async () => {
