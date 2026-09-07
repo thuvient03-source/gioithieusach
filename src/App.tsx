@@ -125,16 +125,62 @@ const imageParts = base64Data ? [{
   }; // Dấu này đóng hàm handleOcrExtract. Hãy xóa các dấu } thừa bên dưới nó nếu có.
   // Main Infographic & Package Generation
   const handleGenerateInfographic = async () => {
-    if (!metadata.title.trim()) {
-      setErrorMsg('Vui lòng nhập Tên sách trước khi tạo Infographic.');
+    if (!metadata.title?.trim()) {
+      setErrorMsg('Vui lòng nhập tên sách trước khi tạo Infographic.');
       return;
     }
 
     try {
       setIsGenerating(true);
       setErrorMsg(null);
-      setGeneratedPackage(json.data);
+
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      
+      let base64Data = coverImage;
+      let mimeType = "image/jpeg";
+      if (coverImage && coverImage.startsWith("data:")) {
+        const matches = coverImage.match(/^data:(.+);base64,(.+)$/);
+        if (matches) {
+          mimeType = matches[1];
+          base64Data = matches[2];
+        }
+      }
+
+      const imageParts = base64Data ? [{
+        inlineData: {
+          data: base64Data,
+          mimeType
+        }
+      }] : [];
+
+      const prompt = `Bạn là một chuyên gia tạo nội dung Infographic giới thiệu sách.
+      Dựa vào các thông tin sau, hãy viết nội dung chi tiết cho một Infographic.
+      Yêu cầu trả về MỘT CHUỖI JSON DUY NHẤT có cấu trúc như sau (không kèm markdown \`\`\`json):
+      {
+        "title": "Tiêu đề cuốn sách",
+        "author": "Tên tác giả",
+        "mainQuote": "Một câu trích dẫn hay ho",
+        "keyPoints": ["Điểm chính 1", "Điểm chính 2", "Điểm chính 3"],
+        "summary": "Tóm tắt ngắn gọn",
+        "targetAudience": "Đối tượng đọc phù hợp"
+      }
+
+      Thông tin đầu vào:
+      - Metadata: ${JSON.stringify(metadata)}
+      - Tóm tắt: ${summaryText || 'Không có'}
+      - Thư viện: ${JSON.stringify(libraryConfig)}
+      `;
+
+      const result = await model.generateContent([prompt, ...imageParts]);
+      const response = await result.response;
+      const text = response.text();
+
+      const cleanJsonString = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      const generatedData = JSON.parse(cleanJsonString);
+
+      setGeneratedPackage(generatedData);
       setActiveTab('result');
+
     } catch (err: any) {
       console.error('Generation Error:', err);
       setErrorMsg(err.message || 'Đã xảy ra lỗi khi kết nối với máy chủ AI.');
