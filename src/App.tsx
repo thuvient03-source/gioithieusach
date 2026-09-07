@@ -77,53 +77,51 @@ export default function App() {
       return;
     }
 
-    try {
-      setIsOcrLoading(true);
-      setErrorMsg(null);
-      setOcrStatusMsg('Đang AI OCR trích xuất thông tin bìa sách...');
+    import { GoogleGenerativeAI } from "@google/generative-ai";
 
-      const res = await fetch('/api/ocr-extract', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          imageBase64: coverImage,
-          rawText: summaryText,
-        }),
-      });
+// Khởi tạo thư viện bằng API Key lấy từ Vite Environment
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
-      if (!res.ok) {
-  const errorText = await res.text();
-  throw new Error(`Đường dẫn API chưa tồn tại hoặc bị lỗi (Mã lỗi: ${res.status}).`);
+try {
+  setIsOcrLoading(true);
+  setErrorMsg(null);
+  setOcrStatusMsg("Đang kết nối Google AI...");
+
+  // Chuẩn bị dữ liệu ảnh
+  let base64Data = coverImage;
+  let mimeType = "image/jpeg";
+  if (coverImage && coverImage.startsWith("data:")) {
+    const matches = coverImage.match(/^data:(.+);base64,(.+)$/);
+    if (matches) {
+      mimeType = matches[1];
+      base64Data = matches[2];
+    }
+  }
+
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  
+  const prompt = `Phân tích hình ảnh bìa sách và trích xuất các thông tin chi tiết (tên sách, tác giả, nhà xuất bản...). Kết hợp với dữ liệu sau nếu có: ${summaryText || ''}`;
+  
+  const imageParts = base64Data ? [{
+    inlineData: {
+      data: base64Data,
+      mimeType
+    }
+  }] : [];
+
+  const result = await model.generateContent([prompt, ...imageParts]);
+  const response = await result.response;
+  const text = response.text();
+
+  // Cập nhật dữ liệu vào state của bạn (tương tự JSON trả về lúc trước)
+  const extractedText = text || "Không tìm thấy thông tin hợp lệ.";
+  // ... đoạn code cập nhật UI của bạn
+} catch (error) {
+  console.error("Lỗi Google AI:", error);
+  setErrorMsg(`Lỗi xử lý AI: ${error.message}`);
+} finally {
+  setIsOcrLoading(false);
 }
-const json = await res.json();
-      if (!res.ok || !json.success) {
-        throw new Error(json.error || 'Trích xuất thất bại.');
-      }
-
-      const extracted = json.data;
-      setMetadata((prev) => ({
-        ...prev,
-        title: extracted.title || prev.title,
-        author: extracted.author || prev.author,
-        publisher: extracted.publisher || prev.publisher,
-        publishYear: extracted.publishYear || prev.publishYear,
-        pageCount: extracted.pageCount || prev.pageCount,
-        genre: extracted.genre || prev.genre,
-        targetAudience: extracted.targetAudience || prev.targetAudience,
-        keywords: extracted.keywords || prev.keywords,
-      }));
-
-      if (extracted.summaryText && !summaryText) {
-        setSummaryText(extracted.summaryText);
-      }
-
-      setOcrStatusMsg('Đã trích xuất thông tin bìa sách thành công!');
-      setTimeout(() => setOcrStatusMsg(null), 3000);
-    } catch (err: any) {
-      console.error('OCR Error:', err);
-      setErrorMsg(err.message || 'Lỗi khi trích xuất OCR.');
-    } finally {
-      setIsOcrLoading(false);
     }
   };
 
