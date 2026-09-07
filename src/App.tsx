@@ -12,6 +12,7 @@ import { StepBranding } from './components/StepBranding';
 import { InfographicCanvas } from './components/InfographicCanvas';
 import { MediaContentPackageView } from './components/MediaContentPackageView';
 import { LoadingOverlay } from './components/LoadingOverlay';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import {
   BookMetadata,
   ImageEnhancement,
@@ -22,6 +23,7 @@ import { BOOK_PRESETS, BookPreset } from './data/presets';
 import { Sparkles, ArrowRight, RefreshCw, AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react';
 
 export default function App() {
+  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
   const [activeTab, setActiveTab] = useState<'creator' | 'result' | 'media' | 'branding'>('creator');
 
   // Form State
@@ -76,12 +78,7 @@ export default function App() {
       setErrorMsg('Vui lòng tải ảnh bìa hoặc dán văn bản tóm tắt trước khi trích xuất OCR.');
       return;
     }
-
-    import { GoogleGenerativeAI } from "@google/generative-ai";
-
 // Khởi tạo thư viện bằng API Key lấy từ Vite Environment
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-
 try {
   setIsOcrLoading(true);
   setErrorMsg(null);
