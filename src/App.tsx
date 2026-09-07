@@ -133,23 +133,6 @@ const imageParts = base64Data ? [{
     try {
       setIsGenerating(true);
       setErrorMsg(null);
-
-      const res = await fetch('/api/analyze-and-generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          imageBase64: coverImage,
-          metadata,
-          summaryText,
-          libraryConfig,
-        }),
-      });
-
-      const json = await res.json();
-      if (!res.ok || !json.success) {
-        throw new Error(json.error || 'Không thể tạo Infographic.');
-      }
-
       setGeneratedPackage(json.data);
       setActiveTab('result');
     } catch (err: any) {
