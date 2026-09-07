@@ -95,7 +95,7 @@ try {
     }
   }
 
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
   
   const prompt = `Phân tích hình ảnh bìa sách và trích xuất các thông tin chi tiết (tên sách, tác giả, nhà xuất bản...). Kết hợp với dữ liệu sau nếu có: ${summaryText || ''}`;
   
@@ -134,7 +134,7 @@ const imageParts = base64Data ? [{
       setIsGenerating(true);
       setErrorMsg(null);
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
       
       let base64Data = coverImage;
       let mimeType = "image/jpeg";
