@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Be Vietnam Pro', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Custom font utility classes for solemn calligraphy and handwriting */
+.font-handwriting {
+  font-family: 'Charm', 'Dancing Script', 'Great Vibes', cursive, serif;
+}
+
+.font-calligraphy {
+  font-family: 'Charm', cursive, serif;
+}
+
+.font-booktitle {
+  font-family: 'Charm', 'Playfair Display', Georgia, serif;
+}

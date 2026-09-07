@@ -1,0 +1,6 @@
+{
+  "name": "BookInfo AI – Tạo Infographic Giới thiệu Sách",
+  "description": "Ứng dụng AI thông minh giúp tạo Infographic giới thiệu sách chuyên nghiệp, bài viết truyền thông, slogan và bộ hashtag cho thư viện, trường học và nhà xuất bản.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
